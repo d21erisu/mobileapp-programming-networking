@@ -19,6 +19,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements JsonTask.JsonTaskListener {
 
     private RecyclerView recyclerView;
+    private MountainAdapter adapter;
+    private ArrayList<Mountain> mountains;
 
     private final String JSON_URL = "https://mobprog.webug.se/json-api?login=brom";
     private final String JSON_FILE = "mountains.json";
@@ -28,14 +30,10 @@ public class MainActivity extends AppCompatActivity implements JsonTask.JsonTask
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        List<String> mountains = Arrays.asList("Test", "Test2");
         recyclerView = findViewById(R.id.recycler_view);
-        recyclerView = findViewById(R.id.recycler_view);
-        MountainAdapter mountainAdapter = new MountainAdapter(mountains);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        mountains = new ArrayList<Mountain>();
 
-       // new JsonFile(this, this).execute(JSON_FILE);
-
+        new JsonFile(this, this).execute(JSON_FILE);
         new JsonTask(this).execute(JSON_URL);
 
 
@@ -43,11 +41,17 @@ public class MainActivity extends AppCompatActivity implements JsonTask.JsonTask
 
     @Override
     public void onPostExecute(String json) {
+
         Log.d("MainActivity", json);
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<Mountain>>() {}.getType();
+        mountains = gson.fromJson(json, type);
+        adapter = new MountainAdapter(mountains);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        adapter.notifyDataSetChanged();
+
     }
 
-    Gson gson = new Gson();
-    Type type = new TypeToken<List<Mountain>>() {}.getType();
-    List<Mountain> listOfMountains = gson.fromJson(json, type);
 
 }
