@@ -7,6 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements JsonTask.JsonTask
         MountainAdapter mountainAdapter = new MountainAdapter(mountains);
         recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
-        new JsonFile(this, this).execute(JSON_FILE);
+       // new JsonFile(this, this).execute(JSON_FILE);
 
         new JsonTask(this).execute(JSON_URL);
 
@@ -41,5 +45,9 @@ public class MainActivity extends AppCompatActivity implements JsonTask.JsonTask
     public void onPostExecute(String json) {
         Log.d("MainActivity", json);
     }
+
+    Gson gson = new Gson();
+    Type type = new TypeToken<List<Mountain>>() {}.getType();
+    List<Mountain> listOfMountains = gson.fromJson(json, type);
 
 }
