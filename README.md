@@ -1,42 +1,121 @@
 
-# Rapport
 
-**Skriv din rapport här!**
 
-_Du kan ta bort all text som finns sedan tidigare_.
 
-## Följande grundsyn gäller dugga-svar:
 
-- Ett kortfattat svar är att föredra. Svar som är längre än en sida text (skärmdumpar och programkod exkluderat) är onödigt långt.
-- Svaret skall ha minst en snutt programkod.
-- Svaret skall inkludera en kort övergripande förklarande text som redogör för vad respektive snutt programkod gör eller som svarar på annan teorifråga.
-- Svaret skall ha minst en skärmdump. Skärmdumpar skall illustrera exekvering av relevant programkod. Eventuell text i skärmdumpar måste vara läsbar.
-- I de fall detta efterfrågas, dela upp delar av ditt svar i för- och nackdelar. Dina för- respektive nackdelar skall vara i form av punktlistor med kortare stycken (3-4 meningar).
 
-Programkod ska se ut som exemplet nedan. Koden måste vara korrekt indenterad då den blir lättare att läsa vilket gör det lättare att hitta syntaktiska fel.
+För att skapa en recyclerview lades följande rad kod till i `actvity_main.xml`
+```
+<androidx.recyclerview.widget.RecyclerView
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:id="@+id/recycler_view"  />
+```
+samt följande rad kod i `MainActivity.java` i "onCreate"-metoden.
+```
+recyclerView = findViewById(R.id.recycler_view);
+```
+
+Efter det skapades en ArrayList av typen Mountain i och med detta skapade jag en ny klass som är av typen Mountain så att ArrayListen kan fyllas med
+Mountain-objekt
+```
+private ArrayList<Mountain> mountains;
+```
+I klassen mountain skapade jag de attribut som varje berg kommer att ha, jag följde Json-datan och formade klassen på följande sätt:
+(Jag skapade ytterliggare en klass, auxdata som tar en länk och en bild men det anser jag överflödigt att förjupa mig i)
+```
+public class Mountain {
+    @SerializedName("ID")
+    private String id;
+    private String name;
+    private String type;
+    private String company;
+    private String location;
+    private String category;
+    private int size;
+    private int cost;
+    private auxdata auxdata;
+```
+Jag skapade en "recyclerwievadapter" som en medlemsvariabel med följande kod i `MainActvity.java`
+```
+private MountainAdapter adapter;
+```
+
+För att skapa en recyclerviewadapter och en recyclerviewholder skapade jag en ny klass kallad `MountainAdapter.java`
+i denna klass skapade jag de metoder som krävdes samt hänvisade till en xml-fil som agerar mall till hur min recyclerview ska presentera data. 
+Min mall ligger i `list_item.xml` och är uppbyggd på följande sätt:
+```
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <TextView
+        android:id="@+id/mountain_name"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textAlignment="center"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+```
+montainadapter klassen är uppbyggd med följande kod där jag hänviar till "list_item" vilket är min mall för layouten
 
 ```
-function errorCallback(error) {
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            // Geolocation API stöds inte, gör något
-            break;
-        case error.POSITION_UNAVAILABLE:
-            // Misslyckat positionsanrop, gör något
-            break;
-        case error.UNKNOWN_ERROR:
-            // Okänt fel, gör något
-            break;
+public class MountainAdapter extends RecyclerView.Adapter<MountainAdapter.MountainViewHolder>{
+private List<Mountain> mountains;
+public MountainAdapter(List<Mountain> mountains) {
+this.mountains = mountains;
+}
+
+    @NonNull
+    @Override
+    public MountainViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item,parent,false);
+        return new MountainViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull MountainViewHolder holder, int position) {
+        Mountain mountain = mountains.get(position);
+        holder.mountain_name.setText(mountain.getName());
+    }
+
+    @Override
+    public int getItemCount() {
+        return mountains.size();
+    }
+
+    public class MountainViewHolder extends RecyclerView.ViewHolder {
+        private TextView mountain_name;
+        public MountainViewHolder(@NonNull View itemView) {
+            super(itemView);
+            mountain_name = itemView.findViewById(R.id.mountain_name);
+        }
     }
 }
 ```
+Jag bytte ut URL i denna rad som befinner sig i `MainActivity.java`
+```
+private final String JSON_URL = "https://mobprog.webug.se/json-api?login=brom";
+```
+För att parsa Json-datan och visa den i min recyclerview skrev jag följande kod:
 
-Bilder läggs i samma mapp som markdown-filen.
+```
+       @Override
+    public void onPostExecute(String json) {
+
+        Log.d("MainActivity", json);
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<Mountain>>() {}.getType();
+        mountains = gson.fromJson(json, type);
+        adapter = new MountainAdapter(mountains);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        adapter.notifyDataSetChanged();
+
+    }
+```
+
 
 ![](android.png)
-
-Läs gärna:
-
-- Boulos, M.N.K., Warren, J., Gong, J. & Yue, P. (2010) Web GIS in practice VIII: HTML5 and the canvas element for interactive online mapping. International journal of health geographics 9, 14. Shin, Y. &
-- Wunsche, B.C. (2013) A smartphone-based golf simulation exercise game for supporting arthritis patients. 2013 28th International Conference of Image and Vision Computing New Zealand (IVCNZ), IEEE, pp. 459–464.
-- Wohlin, C., Runeson, P., Höst, M., Ohlsson, M.C., Regnell, B., Wesslén, A. (2012) Experimentation in Software Engineering, Berlin, Heidelberg: Springer Berlin Heidelberg.

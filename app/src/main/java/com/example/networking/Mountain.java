@@ -12,7 +12,7 @@ public class Mountain {
     private String category;
     private int size;
     private int cost;
-    //private auxdata auxdata;
+    private auxdata auxdata;
 
 
 
@@ -25,7 +25,7 @@ public class Mountain {
         this.category = category;
         this.size = size;
         this.cost = cost;
-        //this.auxdata = auxdata;
+        this.auxdata = auxdata;
     }
 
     public String getId() {
@@ -60,9 +60,9 @@ public class Mountain {
         return cost;
     }
 
-    //public com.example.networking.auxdata getAuxdata() {
-    //    return auxdata;
-    //}
+    public com.example.networking.auxdata getAuxdata() {
+        return auxdata;
+    }
 
     public void setId(String id) {
         this.id = id;
@@ -96,7 +96,7 @@ public class Mountain {
         this.cost = cost;
     }
 
-   // public void setAuxdata(com.example.networking.auxdata auxdata) {
-   //     this.auxdata = auxdata;
-   // }
+   public void setAuxdata(com.example.networking.auxdata auxdata) {
+        this.auxdata = auxdata;
+    }
 }
