@@ -118,4 +118,4 @@ För att parsa Json-datan och visa den i min recyclerview skrev jag följande ko
 ```
 
 
-![](android.png)
+![](screenOfApp.png)
